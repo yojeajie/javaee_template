@@ -1,0 +1,13 @@
+apply from: JAVA_GRADLE
+
+dependencies {
+    compile project(":spring:integration"),
+            "org.springframework.integration:spring-integration-kafka",
+            "org.springframework.kafka:spring-kafka",
+            "org.apache.kafka:kafka_2.11",
+            "org.apache.avro:avro:${avroVersion}",
+            "org.apache.zookeeper:zookeeper:${zookeeperVersion}",
+
+            "com.alibaba:fastjson:${fastjsonVersion}"
+
+}

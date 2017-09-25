@@ -1,0 +1,14 @@
+apply from: JAVA_GRADLE
+apply from: SPRING4_GRADLE
+
+dependencies {
+    compile project(":public"),
+            project(":config"),
+            project(":entity"),
+            spring4Dependencies
+//            "mysql:mysql-connector-java"
+//            "org.mybatis:mybatis-spring:$mybatisSpringVersion",
+//            "org.mybatis.caches:mybatis-ehcache:$mybatisEhcacheVersion",
+//            "com.github.pagehelper:pagehelper:4.1.3",
+//            "com.github.jsqlparser:jsqlparser:0.9.4"
+}

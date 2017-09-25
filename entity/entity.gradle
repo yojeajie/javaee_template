@@ -1,0 +1,20 @@
+apply from: JAVA_GRADLE
+
+dependencies {
+    compile project(":public"),
+            "org.eclipse.persistence:javax.persistence"
+
+    compile ("org.hibernate:hibernate-entitymanager") {
+        exclude(module: 'hibernate-jpa-2.1-api')
+    }
+//            "org.hibernate:hibernate-core:$hibernateVersion",
+//            "org.hibernate:hibernate-search:$hibernateSearchVersion",
+//            "org.hibernate:hibernate-search-analyzers:$hibernateSearchVersion",
+//            "org.hibernate:hibernate-search-engine:$hibernateSearchVersion",
+//            "org.hibernate:hibernate-search-orm:$hibernateSearchVersion",
+
+//        "org.mybatis:mybatis"
+        // "tk.mybatis:mapper:3.3.8",
+//        "javax.persistence:persistence-api:1.0"
+
+}

@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+        maven { url "http://maven.aliyun.com/nexus/content/repositories/jcenter" }
+        maven { url "http://maven.aliyun.com/nexus/content/repositories/releases"}
+        mavenCentral()
+        maven { url "http://maven.wso2.org/nexus/content/groups/public" }
+    }
+    dependencies {
+        classpath ("org.gradle.api.plugins:gradle-tomcat-plugin:1.2.3")
+//        classpath 'io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE'
+//        classpath("org.springframework.build.gradle:propdeps-plugin:0.0.7")
+//        classpath("io.spring.gradle:spring-io-plugin:0.0.4.RELEASE")
+//        classpath('me.champeau.gradle:gradle-javadoc-hotfix-plugin:0.1')
+//        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.2'
+//        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+    }
+}
+
+plugins {
+    id "io.spring.dependency-management" version "1.0.3.RELEASE" apply false
+}
+
+ext.JAVA_GRADLE = "$rootDir/gradle/java.gradle"
+ext.SPRING3_GRADLE = "$rootDir/gradle/spring3.gradle"
+ext.SPRING4_GRADLE = "$rootDir/gradle/spring4.gradle"
+ext.MAVEN_GRADLE = "$rootDir/gradle/publish-maven.gradle"
+ext.TOMCAT_GRADLE = "$rootDir/gradle/tomcat.gradle"
+ext.TOMCAT_6_GRADLE = "$rootDir/gradle/tomcat6.gradle"
+ext.TOMCAT_7_GRADLE = "$rootDir/gradle/tomcat7.gradle"

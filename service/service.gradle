@@ -1,0 +1,25 @@
+apply from: JAVA_GRADLE
+
+dependencies {
+    compile project(":dao"),
+            // spring
+            "org.springframework:spring-context",
+            "org.springframework:spring-tx"
+
+    testCompile junitDependencies,
+            "org.springframework:spring-test",
+            "org.springframework:spring-context-support",
+            "org.springframework:spring-beans",
+            "org.springframework:spring-aspects",
+            "org.springframework:spring-jdbc",
+            "org.springframework:spring-expression",
+            "org.springframework:spring-jms",
+            "org.springframework:spring-orm",
+
+            // database druid hibernate
+            "mysql:mysql-connector-java",
+            "com.alibaba:druid:$druidVersion",
+            "com.alibaba:fastjson:$fastjsonVersion",
+            servletJspDependencies,
+            libsDependencies
+}

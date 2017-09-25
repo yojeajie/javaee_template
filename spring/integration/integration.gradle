@@ -1,0 +1,11 @@
+apply from: JAVA_GRADLE
+apply from: SPRING4_GRADLE
+
+dependencies {
+    compile spring4Dependencies,
+            "org.springframework.integration:spring-integration-core",
+            "org.slf4j:slf4j-log4j12"
+
+    testCompile junitDependencies,
+            "org.springframework:spring-test"
+}

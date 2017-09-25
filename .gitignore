@@ -1,22 +1,106 @@
-# Compiled class file
-*.class
+# IDEA
+*.ipr
+*.iws
+*.iml
 
-# Log file
-*.log
+.idea
+.gradle
 
-# BlueJ files
-*.ctxt
+# eclipse
+/.classpath
+/.project
+/.settings
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# MAC
+.DS_Store
 
-# Package Files #
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
+# Module rootProject
+/build
+/out
+/classes
+/logs
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# Project Module public
+/public/build
+/public/out
+/public/classes
+/public/logs
+
+# Project Module conifg
+/config/build
+/config/out
+/config/classes
+/config/logs
+
+# Project Module entity
+/entity/build
+/entity/out
+/entity/classes
+/entity/logs
+
+# Project Module dao
+/dao/build
+/dao/out
+/dao/classes
+/dao/logs
+
+# Project Module service
+/service/build
+/service/out
+/service/classes
+/service/logs
+
+# Project Module task
+/task/build
+/task/out
+/task/classes
+/task/logs
+
+# Project Module api
+/api/build
+/api/out
+/api/classes
+/api/logs
+
+# Project Module api-webapp
+/api/api-webapp/build
+/api/api-webapp/out
+/api/api-webapp/classes
+/api/api-webapp/logs
+
+# Project Module compontents
+# integration
+/spring/integration/build
+/spring/integration/out
+/spring/integration/classes
+/spring/integration/logs
+
+# xmpp
+/spring/integration-xmpp/build
+/spring/integration-xmpp/out
+/spring/integration-xmpp/classes
+/spring/integration-xmpp/logs
+
+# ip
+/spring/integration-ip/build
+/spring/integration-ip/out
+/spring/integration-ip/classes
+/spring/integration-ip/logs
+
+# http
+/spring/integration-http/build
+/spring/integration-http/out
+/spring/integration-http/classes
+/spring/integration-http/logs
+
+# cassandra
+/spring/integration-cassandra/build
+/spring/integration-cassandra/out
+/spring/integration-cassandra/classes
+/spring/integration-cassandra/logs
+
+# kafka
+/spring/integration-kafka/build
+/spring/integration-kafka/out
+/spring/integration-kafka/classes
+/spring/integration-kafka/logs

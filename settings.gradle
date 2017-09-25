@@ -1,0 +1,39 @@
+rootProject.name = 'javaee-template'
+
+// 公共依赖项目，包括各种工具及工具类
+include 'public'
+
+// 基础配置文件， 数据库 kafka等
+include 'config'
+
+// 数据库映射实体类
+include 'entity'
+
+// DAO
+include 'dao'
+
+// Service
+include 'service'
+
+// 任务，例如定时任务等
+include 'task'
+
+// spring integration 模块组件项目
+include 'spring:integration-public' // 公共模块
+include 'spring:integration' // 下面所有的组件项目都必须依赖该项目
+include 'spring:integration-xmpp'
+include 'spring:integration-ip'
+include 'spring:integration-http'
+include 'spring:integration-cassandra'
+include 'spring:integration-kafka'
+
+// HTTP api
+include 'webapp:webapp-api'
+
+// rename build file name
+rootProject.children.each {project ->
+    project.buildFileName = "${project.name}.gradle"
+    project.children.each {subProject ->
+        subProject.buildFileName = "${subProject.name}.gradle"
+    }
+}

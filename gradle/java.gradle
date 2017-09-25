@@ -1,0 +1,77 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'io.spring.dependency-management'
+//apply plugin: 'groovy'
+//apply plugin: 'javadocHotfix'
+//apply plugin: 'eclipse-wtp'
+//apply plugin: 'propdeps'
+//apply plugin: 'propdeps-idea'
+//apply plugin: 'propdeps-eclipse'
+//apply plugin: 'com.github.ben-manes.versions'
+
+group 'com.payjoy'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+// java编译的时候缺省状态下会因为中文字符而失败
+[compileJava,compileTestJava,javadoc]*.options*.encoding = 'UTF-8'
+
+repositories {
+    jcenter()
+	mavenLocal()
+	maven { url "http://maven.aliyun.com/nexus/content/repositories/jcenter" }
+	maven { url "http://maven.aliyun.com/nexus/content/repositories/releases"}
+	mavenCentral()
+	maven { url 'https://repo.spring.io/libs-snapshot' }
+	maven { url "http://maven.wso2.org/nexus/content/groups/public" }
+	maven { url 'http://maven.oschina.net/content/groups/publis' }
+}
+
+dependencyManagement {
+	imports {
+		mavenBom 'io.spring.platform:platform-bom:Brussels-SR5'
+//		mavenBom 'io.spring.platform:platform-bom:Athens-SR3'
+	}
+}
+
+// 依赖maven中不存在的jar
+ext.libsDependencies = fileTree(dir: 'libs', include: '**/*.jar')
+ext.rootProjectLibs = new File(rootProject.rootDir, 'libs').getAbsolutePath()
+ext.libsDependencies += fileTree(dir: rootProjectLibs, include: '**/*.jar')
+
+ext.junitDependencies = ["junit:junit"]
+ext.jstlDependencies = [
+		"javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api",
+		"org.apache.taglibs:taglibs-standard-jstlel"
+]
+ext.servletJspDependencies = [
+        // 3.x
+        "javax.servlet:javax.servlet-api",
+        "javax.servlet.jsp:javax.servlet.jsp-api"
+]
+//ext.springIoVersion = project.hasProperty('platformVersion') ? platformVersion : 'latest.integration'
+
+if (project.hasProperty('profile')) {
+	ext.profile = project['profile']
+} else {
+	ext.profile = 'dev'
+}
+//println ext.profile
+
+//configurations.all {
+//	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+//			if (details.requested.group == 'org.springframework') {
+//				details.useVersion springVersion
+//			}
+//	}
+//}
+
+sourceSets {
+	main {
+		resources {
+			srcDirs = ["src/main/resources", "src/main/profile/${profile}"]
+		}
+	}
+}

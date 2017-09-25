@@ -1,0 +1,19 @@
+apply from: JAVA_GRADLE
+
+dependencies {
+    compile project(":service"),
+            // spring
+            "org.springframework:spring-context",
+            "org.springframework:spring-tx",
+            "org.seleniumhq.selenium:selenium-java:2.52.0"
+
+    testCompile junitDependencies,
+            "org.springframework:spring-test",
+            "org.springframework:spring-context-support",
+            "org.springframework:spring-beans",
+            "org.springframework:spring-aspects",
+            "org.springframework:spring-expression",
+            "org.springframework:spring-jms",
+            "org.springframework:spring-orm",
+            libsDependencies
+}

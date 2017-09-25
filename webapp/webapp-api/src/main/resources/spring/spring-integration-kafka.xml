@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-kafka="http://www.springframework.org/schema/integration/kafka"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						   http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+						   http://www.springframework.org/schema/integration
+						   http://www.springframework.org/schema/integration/spring-integration-4.2.xsd
+	   					   http://www.springframework.org/schema/integration/kafka
+						   http://www.springframework.org/schema/integration/kafka/spring-integration-kafka-1.3.xsd
+						   http://www.springframework.org/schema/task
+						   http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <!--订单系统kafka配置文件-->
+    <!-- Producer通道 -->
+    <int:channel id="outToKafka">
+        <int:queue/>
+    </int:channel>
+    <!-- Consumer通道 -->
+    <int:channel id="inputFromKafka">
+        <int:queue/>
+    </int:channel>
+
+    <!-- zookeeper配置 -->
+    <int-kafka:zookeeper-connect id="zookeeperConnect"
+                                 zk-connect="${kafka.zk-connect}"
+                                 zk-connection-timeout="6000" zk-session-timeout="6000" zk-sync-time="2000"/>
+
+    <!-- producerContext配置 --><!-- none,gzip,snappy -->
+    <int-kafka:producer-context id="kafkaProducerContext" producer-properties="producerProperties">
+        <int-kafka:producer-configurations>
+            <!--订单信息-->
+            <int-kafka:producer-configuration
+                    broker-list="${kafka.broker-list}"
+                    topic="apay_order_info" key-class-type="java.lang.String" key-encoder="kafkaEncoder"
+                    value-class-type="java.lang.String" value-encoder="kafkaEncoder"
+                    partitioner="kafka_partitioner" compression-type="gzip" sync="false"/>
+        </int-kafka:producer-configurations>
+    </int-kafka:producer-context>
+
+    <!-- ConsumerContext配置 -->
+    <int-kafka:consumer-context id="consumerContext"
+                                consumer-timeout="100" zookeeper-connect="zookeeperConnect"
+                                consumer-properties="consumerProperties">
+        <int-kafka:consumer-configurations>
+            <int-kafka:consumer-configuration
+                    group-id="${kafka.group-id}" max-messages="20000"
+                    value-decoder="kafkaDecoder" key-decoder="kafkaDecoder">
+                <!--订阅 kafka商户-->
+                <!--<int-kafka:topic id="apay_merchant" streams="1"/>-->
+                <!--&lt;!&ndash; 订阅kafka 网点门店&ndash;&gt;-->
+                <!--<int-kafka:topic id="apay_wangdian" streams="1"/>-->
+                <!--&lt;!&ndash; 订阅kafka pos终端信息&ndash;&gt;-->
+                <!--<int-kafka:topic id="apay_terminal" streams="1"/>-->
+                <!--&lt;!&ndash; 订阅kafka 交易流水&ndash;&gt;-->
+                <!--<int-kafka:topic id="apay_transaction" streams="1"/>-->
+                <!-- 订阅kafka 订单数据-->
+                <int-kafka:topic id="apay_order_info" streams="1"/>
+            </int-kafka:consumer-configuration>
+        </int-kafka:consumer-configurations>
+    </int-kafka:consumer-context>
+
+    <!-- outbound-channel-adapter配置 -->
+    <int-kafka:outbound-channel-adapter id="kafkaOutboundChannelAdapter"
+                                        kafka-producer-context-ref="kafkaProducerContext"
+                                        auto-startup="true" channel="outToKafka">
+        <int:poller fixed-delay="1000" time-unit="MILLISECONDS" receive-timeout="0" task-executor="taskExecutor"/>
+    </int-kafka:outbound-channel-adapter>
+
+    <!-- inbound-channel-adapter配置 -->
+    <int-kafka:inbound-channel-adapter id="kafkaInboundChannelAdapter"
+                                       kafka-consumer-context-ref="consumerContext"
+                                       auto-startup="true" channel="inputFromKafka">
+        <int:poller fixed-delay="100" time-unit="MILLISECONDS" max-messages-per-poll="5"/>
+    </int-kafka:inbound-channel-adapter>
+
+    <!-- producerProperties配置 -->
+    <bean id="producerProperties"
+          class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="topic.metadata.refresh.interval.ms">360000</prop>
+                <prop key="message.send.max.retries">5</prop>
+                <prop key="request.required.acks">1</prop>
+                <prop key="request.timeout.ms">20000</prop>
+                <prop key="send.buffer.bytes">10485760</prop>
+                <prop key="queue.buffering.max.ms">1000</prop>
+                <prop key="queue.buffering.max.messages">10000</prop>
+                <prop key="queue.enqueue.timeout.ms">-1</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- consumerProperties配置 -->
+    <bean id="consumerProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="auto.commit.enable">true</prop>
+                <prop key="auto.commit.interval.ms">1000</prop>
+                <prop key="socket.receive.buffer.bytes">20971520</prop><!-- 20M -->
+                <prop key="fetch.message.max.bytes">20971520</prop><!-- 20M -->
+            </props>
+        </property>
+    </bean>
+
+    <!-- task线程池配置 -->
+    <task:executor id="taskExecutor" pool-size="5" keep-alive="120" queue-capacity="500"/>
+
+    <bean id="kafkaEncoder"
+          class="org.springframework.integration.kafka.serializer.avro.AvroReflectDatumBackedKafkaEncoder">
+        <constructor-arg value="java.lang.String"/>
+    </bean>
+    <bean id="kafkaDecoder"
+          class="org.springframework.integration.kafka.serializer.avro.AvroReflectDatumBackedKafkaDecoder">
+        <constructor-arg value="java.lang.String"/>
+    </bean>
+
+    <!-- 配置producer分区处理类 -->
+    <bean id="kafka_partitioner" class="com.payjoy.integration.kafka.KafkaPartitionerImpl"/>
+
+    <!-- 消息推送到kafka上的业务逻辑类 -->
+    <bean id="kafkaProducerService" class="com.payjoy.integration.kafka.KafkaProducerServiceImpl">
+        <property name="messageChannel" ref="outToKafka"></property>
+    </bean>
+
+    <!--      消费者       -->
+    <!-- Consumer消息分解器 -->
+    <int:splitter input-channel="inputFromKafka" method="split" output-channel="kafkaConsumerMessageTransformerChannel" >
+        <bean class="com.payjoy.integration.kafka.KafkaConsumerMessageSplitter" />
+        <int:poller fixed-delay="10" time-unit="MILLISECONDS" max-messages-per-poll="5" />
+    </int:splitter>
+    <!-- 转换器通道 -->
+    <int:channel id="kafkaConsumerMessageTransformerChannel" />
+    <!-- 消息转换器 -->
+    <int:transformer method="transformer"
+                     input-channel="kafkaConsumerMessageTransformerChannel"
+                     output-channel="kafkaConsumerMessageRouterChannel" >
+        <bean class="com.payjoy.integration.kafka.KafkaMessageTransformer" />
+    </int:transformer>
+    <!-- 路由器通道 -->
+    <int:channel id="kafkaConsumerMessageRouterChannel" ></int:channel>
+    <!-- 业务消息路由器 -->
+    <int:header-value-router id="kafkaConsumerMessageRouter" input-channel="kafkaConsumerMessageRouterChannel" header-name="kafka_topic"
+                             default-output-channel="logger">
+        <!--<int:mapping value="apay_wangdian" channel="wangdianChannel" />-->
+        <!--<int:mapping value="apay_merchant" channel="shopChannel" />-->
+        <!--&lt;!&ndash;pos终端信息通道&ndash;&gt;-->
+        <!--<int:mapping value="apay_terminal" channel="posChannel" />-->
+        <!--&lt;!&ndash;交易流水信息通道&ndash;&gt;-->
+        <!--<int:mapping value="apay_transaction" channel="transactionChannel" />-->
+        <!--<int:mapping value="apay_order_info" channel="orderInfoChannel"/>-->
+    </int:header-value-router>
+
+    <int:logging-channel-adapter id="logger" level="INFO" />
+
+    <!-- 设置默认的日志输出 -->
+    <!--<int:logging-channel-adapter id="logger" level="INFO" />-->
+
+    <!-- 网店 -->
+    <!--<int:channel id="wangdianChannel"/>-->
+    <!-- 商户 -->
+    <!--<int:channel id="shopChannel"/>-->
+    <!-- pos终端信息通道 -->
+    <!--<int:channel id="posChannel"/>-->
+    <!-- 交易流水信息通道 -->
+    <!--<int:channel id="transactionChannel"/>-->
+    <!-- 订单数据 -->
+    <!--<int:channel id="orderInfoChannel"/>-->
+
+    <!--<int:service-activator input-channel="orderInfoChannel" method="execute">-->
+        <!--<bean class="com.payjoy.integration.kafka.topic.consumer.AcquireOrderInfoImpl"-->
+              <!--/>-->
+    <!--</int:service-activator>-->
+
+</beans>

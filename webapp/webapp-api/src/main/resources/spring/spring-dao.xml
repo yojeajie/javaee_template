@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+    <!-- 将一个业务逻辑实体交给Spring管理有两种方式：注解+扫描、 配置 -->
+    <!-- 扫描以com.xianmeijia.eshop.bean开头的包，以及子包都会扫描的到 -->
+    <context:component-scan base-package="com.payjoy.entity"/>
+
+    <!-- JPA实体工厂<strong>配置</strong> -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+          p:packagesToScan="com.payjoy.entity"
+          p:dataSource-ref="dataSource"
+          p:jpaVendorAdapter-ref="hibernateJpaVendorAdapter"
+          p:jpaPropertyMap-ref="jpaPropertyMap"/>
+
+    <!-- JPA2.1 Hibernate实现，配置相关属性-->
+    <util:map id="jpaPropertyMap">
+        <entry key="hibernate.dialect" value="${jpa.hibernate.dialect}"/>
+        <entry key="hibernate.hbm2ddl.auto" value="${jpa.hibernate.hbm2ddl.auto}"/>
+        <entry key="hibernate.max_fetch_depth" value="3"/>
+        <entry key="hibernate.jdbc.fetch_size" value="18"/>
+        <entry key="hibernate.jdbc.batch_size" value="10"/>
+
+        <entry key="hibernate.show_sql" value="${jpa.hibernate.show_sql}"/>
+        <entry key="hibernate.format_sql" value="${jpa.hibernate.format_sql}"/>
+    </util:map>
+
+    <!-- 使用hibernate实现的JPA产品 -->
+    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="${jpa.hibernate.show_sql}"/>
+        <property name="generateDdl" value="${jpa.hibernate.generateDdl}"/>
+    </bean>
+</beans>

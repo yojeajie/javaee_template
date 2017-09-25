@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <!--时间处理格式模块 -->
+    <bean id="dateModule" class="cn.com.allunion.common.impl.DateModuleImpl">
+        <property name="dateFormatString">
+            <value>yyyy-MM-dd</value>
+        </property>
+    </bean>
+
+    <!--查询条件构建器-->
+    <bean id="criteriaBuilder" class="cn.com.allunion.common.criterion.jpa.CriteriaForJPABuilder"/>
+</beans>
